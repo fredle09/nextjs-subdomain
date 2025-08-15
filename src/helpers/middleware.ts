@@ -1,7 +1,7 @@
 import { rootDomain } from "@/lib/utils";
 
 export const LIST_SUBDOMAIN = ["affiliate"] as const;
-export const LIST_ORIGIN_SUBDOMAIN = ["", "staging"] as const;
+export const LIST_ORIGIN_SUBDOMAIN = ["", "staging"];
 export const ORIGIN_PATHNAME_MAPPING = LIST_ORIGIN_SUBDOMAIN.reduce<
   Record<string, string>
 >((acc, origin) => {
@@ -49,4 +49,8 @@ export function checkRedirectSubdomain(pathname: string) {
   return LIST_PATHNAME.find(
     (path) => pathname === `/${path}` || pathname.startsWith(`/${path}/`)
   );
+}
+
+export function getNewSubdomain(subdomain: string, redirectSubdomain: string) {
+  return !subdomain ? redirectSubdomain : `${subdomain}-${redirectSubdomain}`;
 }

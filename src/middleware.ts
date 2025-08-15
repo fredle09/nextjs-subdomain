@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import {
   getSubdomain,
   getRedirectUrl,
+  getNewSubdomain,
+  LIST_ORIGIN_SUBDOMAIN,
   checkRedirectSubdomain,
   ORIGIN_PATHNAME_MAPPING,
 } from "./helpers/middleware";
@@ -16,20 +18,16 @@ export async function middleware(req: NextRequest) {
   const host = headers.get("host") || null;
   const subdomain = getSubdomain(host);
 
-  if (!subdomain || ["staging"].includes(subdomain)) {
+  if (LIST_ORIGIN_SUBDOMAIN.includes(subdomain)) {
     const redirectSubdomain = checkRedirectSubdomain(pathname);
     if (redirectSubdomain) {
       const newPathname = pathname.replace(redirectSubdomain, "");
-      const newSubdomain = !subdomain
-        ? redirectSubdomain
-        : `${subdomain}-${redirectSubdomain}`;
+      const newSubdomain = getNewSubdomain(subdomain, redirectSubdomain);
 
       const url = getRedirectUrl(newPathname, protocol, newSubdomain);
       return NextResponse.redirect(url);
     }
-  }
-
-  if (subdomain && !["staging"].includes(subdomain)) {
+  } else {
     const redirectSubdomain = ORIGIN_PATHNAME_MAPPING[subdomain];
     // TODO: Need to handle the case sub-pathname is provided not only the root path
     if (pathname === "/") {
