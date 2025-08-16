@@ -21,7 +21,7 @@ export async function middleware(req: NextRequest) {
   if (LIST_ORIGIN_SUBDOMAIN.includes(subdomain)) {
     const redirectSubdomain = checkRedirectSubdomain(pathname);
     if (redirectSubdomain) {
-      const newPathname = pathname.replace(redirectSubdomain, "");
+      const newPathname = pathname.replace(`/${redirectSubdomain}`, "");
       const newSubdomain = getNewSubdomain(subdomain, redirectSubdomain);
 
       const url = getRedirectUrl(newPathname, protocol, newSubdomain);
@@ -30,8 +30,8 @@ export async function middleware(req: NextRequest) {
   } else {
     const redirectSubdomain = ORIGIN_PATHNAME_MAPPING[subdomain];
     // TODO: Need to handle the case sub-pathname is provided not only the root path
-    if (pathname === "/") {
-      url.pathname = `/${redirectSubdomain}`;
+    if (redirectSubdomain) {
+      url.pathname = `/${redirectSubdomain}${pathname}`;
       return NextResponse.rewrite(url);
     }
   }

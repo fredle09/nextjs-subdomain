@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 
 export function generateStaticParams() {
@@ -10,13 +11,13 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-interface IPageProps {
+interface ISlugPageProps {
   params: Promise<{
     slug: string;
   }>;
 }
 
-export default async function Page({ params }: IPageProps) {
+export default async function SlugPage({ params }: ISlugPageProps) {
   const { slug } = await params;
   return (
     <div className="flex h-screen items-center justify-center flex-col gap-8">
@@ -42,7 +43,12 @@ export default async function Page({ params }: IPageProps) {
             Save and see your changes instantly.
           </li>
         </ol>
-
+        <Link
+          href="/sub"
+          className="text-sm sm:text-base font-semibold text-blue-600 hover:underline"
+        >
+          Go to sub Page
+        </Link>
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <a
             className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
