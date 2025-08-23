@@ -4,7 +4,7 @@ import {
   getSubdomain,
   getRedirectUrl,
   getNewSubdomain,
-  LIST_ORIGIN_SUBDOMAIN,
+  ORIGIN_SUBDOMAIN,
   checkRedirectSubdomain,
   ORIGIN_PATHNAME_MAPPING,
 } from "./helpers/middleware";
@@ -18,18 +18,21 @@ export async function middleware(req: NextRequest) {
   const host = headers.get("host") || null;
   const subdomain = getSubdomain(host);
 
-  if (LIST_ORIGIN_SUBDOMAIN.includes(subdomain)) {
+  if (subdomain === ORIGIN_SUBDOMAIN) {
     const redirectSubdomain = checkRedirectSubdomain(pathname);
     if (redirectSubdomain) {
       const newPathname = pathname.replace(`/${redirectSubdomain}`, "");
       const newSubdomain = getNewSubdomain(subdomain, redirectSubdomain);
 
-      const url = getRedirectUrl(newPathname, protocol, newSubdomain);
+      const url = getRedirectUrl({
+        pathname: newPathname,
+        protocol,
+        subdomain: newSubdomain,
+      });
       return NextResponse.redirect(url);
     }
   } else {
     const redirectSubdomain = ORIGIN_PATHNAME_MAPPING[subdomain];
-    // TODO: Need to handle the case sub-pathname is provided not only the root path
     if (redirectSubdomain) {
       url.pathname = `/${redirectSubdomain}${pathname}`;
       return NextResponse.rewrite(url);
@@ -46,8 +49,8 @@ export const config = {
      * Match all paths except for:
      * 1. /api routes
      * 2. /_next (Next.js internals)
-     * 3. all root files inside /public (e.g. /favicon.ico)
+     * 3. all root files inside /public (e.g. /favicon.ico, /images/logo.png, etc.)
      */
-    "/((?!api|_next|[\\w-]+\\.\\w+).*)",
+    "/((?!_next|api)(?!.*\\.[^/]+$).*)",
   ],
 };

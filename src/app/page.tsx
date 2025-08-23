@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 
 export default function Home() {
@@ -52,18 +51,6 @@ export default function Home() {
           </a>
         </div>
       </main>
-      <Link
-        href="/affiliate"
-        className="text-sm sm:text-base font-semibold text-blue-600 hover:underline"
-      >
-        Go to Affiliate Page
-      </Link>
-      <Link
-        href="/root-route"
-        className="text-sm sm:text-base font-semibold text-blue-600 hover:underline"
-      >
-        Go to Root Route Page
-      </Link>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
