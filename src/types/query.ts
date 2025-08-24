@@ -13,9 +13,9 @@ export interface MutationMeta extends QueryMeta {
 }
 
 export const queryKeys = {
-  all: ['queries'] as const,
-  blogs: () => [...queryKeys.all, 'blogs'] as const,
+  all: ["queries"] as const,
+  blogs: () => [...queryKeys.all, "blogs"] as const,
   blog: (id: string) => [...queryKeys.blogs(), id] as const,
-  blogsWithFilter: (filters: string) => 
-    [...queryKeys.blogs(), 'filtered', filters] as const,
+  blogsWithFilterPagination: (filters: unknown) =>
+    [...queryKeys.blogs(), filters] as const,
 } as const;

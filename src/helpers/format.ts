@@ -1,10 +1,7 @@
-"use client";
-// Enhanced error handling utility
 export function formatErrorMessage(error: unknown): {
   title: string;
   description?: string;
 } {
-  // Handle standard Error objects
   if (error instanceof Error) {
     return {
       title: error.name || "Error",
@@ -12,13 +9,12 @@ export function formatErrorMessage(error: unknown): {
     };
   }
 
-  // Handle HTTP response errors
   if (typeof error === "object" && error !== null) {
     const httpError = error as {
       message?: string;
       status?: number;
       statusText?: string;
-      response?: { data?: { message?: string; error?: string; }; };
+      response?: { data?: { message?: string; error?: string } };
     };
 
     if (httpError.response?.data?.message) {
