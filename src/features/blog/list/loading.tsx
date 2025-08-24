@@ -2,7 +2,7 @@ import Mapping from "@/components/mapping";
 
 import { BlogLoading } from "../item/loading";
 
-export function BlogListLoading() {
+export default function BlogListLoading() {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       <Mapping

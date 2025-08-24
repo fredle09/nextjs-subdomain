@@ -8,7 +8,7 @@ import {
 import { BlogRequest } from "@/lib/blog/request";
 import { IGetFilteredBlogsProps } from "@/lib/blog/service";
 
-import queryKeys from "./query-keys";
+import blogQueryKeys from "./query-keys";
 
 import type { IBlogVM } from "@/types/blog";
 import type { UseSuspenseQueryOptions } from "@tanstack/react-query";
@@ -33,7 +33,7 @@ export function getFilteredBlogsOptions(
   IBlogVM[]
 > {
   return {
-    queryKey: queryKeys.blogsWithFilterPagination(params),
+    queryKey: blogQueryKeys.blogsWithFilterPagination(params),
     queryFn: () => BlogRequest.getFilteredBlogs(params),
     select: (data) => data.blogs,
     staleTime: ms("5m"),

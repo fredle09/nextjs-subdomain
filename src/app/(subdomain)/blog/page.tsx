@@ -4,7 +4,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import Blog from "@/features/blog";
 import { BlogService } from "@/lib/blog/service";
-import queryKeys from "@/features/blog/query-keys";
+import blogQueryKeys from "@/features/blog/query-keys";
 import { getQueryClient } from "@/helpers/query-client";
 import { getBlogSearchParams } from "@/features/blog/utils";
 
@@ -23,7 +23,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const blogParams = await createLoader(getBlogSearchParams())(searchParams);
 
   await queryClient.prefetchQuery({
-    queryKey: queryKeys.blogsWithFilterPagination(blogParams),
+    queryKey: blogQueryKeys.blogsWithFilterPagination(blogParams),
     queryFn: () => BlogService.getFilteredBlogs(blogParams),
     staleTime: ms("5m"),
   });

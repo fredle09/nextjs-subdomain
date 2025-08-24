@@ -18,7 +18,7 @@ interface IBlogItemProps {
   blog: IBlogVM;
 }
 
-export function BlogItem({ blog }: IBlogItemProps) {
+export default function BlogItem({ blog }: IBlogItemProps) {
   return (
     <Card className="flex flex-col hover:shadow-lg transition-all duration-200 hover:scale-[1.02] group">
       <CardHeader className="pb-3">

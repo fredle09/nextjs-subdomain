@@ -14,7 +14,7 @@ interface State {
   error?: Error;
 }
 
-export class BlogErrorBoundary extends Component<Props, State> {
+export default class BlogErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
   };
