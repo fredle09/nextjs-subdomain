@@ -14,11 +14,11 @@ import {
 
 import type { IBlogVM } from "@/types/blog";
 
-interface IBlogCardProps {
+interface IBlogItemProps {
   blog: IBlogVM;
 }
 
-export function BlogCard({ blog }: IBlogCardProps) {
+export function BlogItem({ blog }: IBlogItemProps) {
   return (
     <Card className="flex flex-col hover:shadow-lg transition-all duration-200 hover:scale-[1.02] group">
       <CardHeader className="pb-3">

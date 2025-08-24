@@ -37,6 +37,11 @@ export async function generateMetadata({
   };
 }
 
+export async function generateStaticParams() {
+  const slugs = BlogService.getAllSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
+
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
   const blog = BlogService.getBlogBySlug(slug);

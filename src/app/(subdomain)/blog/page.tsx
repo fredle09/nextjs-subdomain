@@ -1,24 +1,22 @@
 import ms from "ms";
-import Link from "next/link";
-import { Suspense } from "react";
 import { createLoader } from "nuqs/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
+import Blog from "@/features/blog";
 import { queryKeys } from "@/types/query";
-import { Button } from "@/components/ui/button";
-import { BlogList } from "@/features/blog/list";
 import { BlogService } from "@/lib/blog/service";
-import { BlogHeader } from "@/features/blog/header";
-import { BlogListLoading } from "@/features/blog/loading";
 import { getQueryClient } from "@/helpers/query-client";
 import { getBlogSearchParams } from "@/features/blog/utils";
-import { BlogErrorBoundary } from "@/features/blog/error-boundary";
 
 import type { SearchParams } from "nuqs/server";
 
 interface BlogPageProps {
   searchParams: Promise<SearchParams>;
 }
+
+export const revalidate = 60; // 1 minute
+
+export const dynamic = "force-static";
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const queryClient = getQueryClient();
@@ -41,22 +39,15 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               our community.
             </p>
           </div>
-          <BlogHeader />
-          <BlogErrorBoundary>
-            <Suspense fallback={<BlogListLoading />}>
-              <BlogList />
-            </Suspense>
-          </BlogErrorBoundary>
-          <div className="mt-16 text-center">
+          <Blog />
+          {/* TODO: Uncomment when implement create new post */}
+          {/* <div className="mt-16 text-center">
             <div className="flex gap-4 items-center justify-center flex-wrap">
               <Button asChild size="lg">
-                <Link href="/blog/create">Create New Post</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/sub">Go to Sub Page</Link>
+                <Link href="/create">Create New Post</Link>
               </Button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </HydrationBoundary>

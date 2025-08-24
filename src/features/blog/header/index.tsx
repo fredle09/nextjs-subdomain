@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
-import { useFilterHooks } from "./list/hooks";
+import { useFilterHooks } from "../list/hooks";
 
 export function BlogHeader() {
   const {
@@ -69,11 +69,18 @@ export function BlogHeader() {
           onClick={() =>
             onSortOrderChange(sortOrder === "asc" ? "desc" : "asc")
           }
+          aria-label={`Sort ${
+            sortOrder === "asc" ? "descending" : "ascending"
+          }`}
+          title={`Click to sort ${
+            sortOrder === "asc" ? "descending" : "ascending"
+          }`}
         >
           <SortAsc
             className={cn("size-4", {
               "rotate-180": sortOrder === "desc",
             })}
+            aria-hidden="true"
           />
         </Button>
       </div>

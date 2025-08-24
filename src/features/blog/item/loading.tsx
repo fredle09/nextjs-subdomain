@@ -1,4 +1,3 @@
-import Mapping from "@/components/mapping";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,
@@ -6,17 +5,6 @@ import {
   CardHeader,
   CardContent,
 } from "@/components/ui/card";
-
-export function BlogListLoading() {
-  return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <Mapping
-        data={Array.from({ length: 2 }).map((_, i) => ({ i }))}
-        as={BlogLoading}
-      />
-    </div>
-  );
-}
 
 export function BlogLoading() {
   return (

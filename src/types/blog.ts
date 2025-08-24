@@ -14,4 +14,4 @@ export interface IBlogVM extends Omit<IBlog, "content"> {
   wordCount: number;
 }
 
-export interface IBlogDetailVM extends IBlog {}
+export type TBlogDetailVM = IBlog;

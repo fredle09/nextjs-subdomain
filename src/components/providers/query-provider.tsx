@@ -5,8 +5,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import { getQueryClient } from "@/helpers/query-client";
 
-import Show from "../show";
-
 type TQueryProviderProps = React.PropsWithChildren;
 
 export function QueryProvider({ children }: TQueryProviderProps) {
@@ -14,9 +12,7 @@ export function QueryProvider({ children }: TQueryProviderProps) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      <Show when={process.env.NODE_ENV === "development"}>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </Show>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

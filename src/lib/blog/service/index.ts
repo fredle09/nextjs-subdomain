@@ -1,6 +1,6 @@
 import db from "@/lib/database";
 
-import type { IBlogDetailVM, IBlogVM } from "@/types/blog";
+import type { TBlogDetailVM, IBlogVM } from "@/types/blog";
 
 function getAllBlogs(published?: boolean): IBlogVM[] {
   let query = "SELECT * FROM blogs";
@@ -17,15 +17,15 @@ function getAllBlogs(published?: boolean): IBlogVM[] {
   return stmt.all(...params) as IBlogVM[];
 }
 
-function getBlogById(id: number): IBlogDetailVM | null {
+function getBlogById(id: number): TBlogDetailVM | null {
   const stmt = db.prepare("SELECT * FROM blogs WHERE id = ?");
-  const result = stmt.get(id) as IBlogDetailVM | undefined;
+  const result = stmt.get(id) as TBlogDetailVM | undefined;
   return result || null;
 }
 
-function getBlogBySlug(slug: string): IBlogDetailVM | null {
+function getBlogBySlug(slug: string): TBlogDetailVM | null {
   const stmt = db.prepare("SELECT * FROM blogs WHERE slug = ?");
-  const result = stmt.get(slug) as IBlogDetailVM | undefined;
+  const result = stmt.get(slug) as TBlogDetailVM | undefined;
   return result || null;
 }
 
