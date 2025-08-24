@@ -1,3 +1,4 @@
+// TODO: Refactor to use server component
 "use client";
 
 import Link from "next/link";
@@ -59,12 +60,15 @@ export default function Header() {
         <Show when={isMenuOpen}>
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+              {/* TODO: Refactor to use Mapping component */}
               {LIST_NAVIGATION.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
                   onClick={() => setIsMenuOpen(false)}
+                  // TODO: set only prefetch with route on the same
+                  prefetch={false}
                 >
                   {item.name}
                 </Link>
