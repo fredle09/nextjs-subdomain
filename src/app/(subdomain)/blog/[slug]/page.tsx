@@ -64,7 +64,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <h1 className="text-4xl font-bold tracking-tight mb-6">
               {blog.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <Avatar className="w-8 h-8">
                   <AvatarFallback className="text-sm">
