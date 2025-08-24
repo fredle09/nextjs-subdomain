@@ -38,7 +38,6 @@ api.interceptors.response.use(
     return response;
   },
   async function (error) {
-    console.log("🚀 ~ error:", error);
     return Promise.reject(error?.response?.data || error.message || error);
   }
 );

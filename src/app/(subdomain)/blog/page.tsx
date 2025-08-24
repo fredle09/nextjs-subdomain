@@ -3,8 +3,8 @@ import { createLoader } from "nuqs/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import Blog from "@/features/blog";
-import { queryKeys } from "@/types/query";
 import { BlogService } from "@/lib/blog/service";
+import queryKeys from "@/features/blog/query-keys";
 import { getQueryClient } from "@/helpers/query-client";
 import { getBlogSearchParams } from "@/features/blog/utils";
 

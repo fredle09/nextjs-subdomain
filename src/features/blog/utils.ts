@@ -5,9 +5,10 @@ import {
   parseAsStringLiteral,
 } from "nuqs/server";
 
-import { queryKeys } from "@/types/query";
 import { BlogRequest } from "@/lib/blog/request";
 import { IGetFilteredBlogsProps } from "@/lib/blog/service";
+
+import queryKeys from "./query-keys";
 
 import type { IBlogVM } from "@/types/blog";
 import type { UseSuspenseQueryOptions } from "@tanstack/react-query";
