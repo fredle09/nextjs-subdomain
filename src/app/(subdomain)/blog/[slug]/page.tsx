@@ -64,7 +64,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <h1 className="text-4xl font-bold tracking-tight mb-6">
               {blog.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <Avatar className="w-8 h-8">
                   <AvatarFallback className="text-sm">
@@ -122,7 +122,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <footer className="border-t pt-8">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <Button asChild variant="outline">
-                <Link href="/blog">
+                <Link href="/">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   All Posts
                 </Link>

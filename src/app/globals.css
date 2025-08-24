@@ -119,4 +119,21 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Fix for h1 font-size warning in semantic elements */
+  section h1,
+  article h1,
+  aside h1,
+  nav h1 {
+    font-size: 2.25rem; /* 36px - corresponds to text-4xl */
+  }
+  
+  @media (min-width: 768px) {
+    section h1,
+    article h1,
+    aside h1,
+    nav h1 {
+      font-size: 3.75rem; /* 60px - corresponds to text-6xl */
+    }
+  }
 }

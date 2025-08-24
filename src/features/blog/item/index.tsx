@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { CalendarDays } from "lucide-react";
 
 import Show from "@/components/show";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import SubdomainLink from "@/features/sub-domain/SubdomainLink";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Card,
@@ -18,7 +18,7 @@ interface IBlogItemProps {
   blog: IBlogVM;
 }
 
-export function BlogItem({ blog }: IBlogItemProps) {
+export default function BlogItem({ blog }: IBlogItemProps) {
   return (
     <Card className="flex flex-col hover:shadow-lg transition-all duration-200 hover:scale-[1.02] group">
       <CardHeader className="pb-3">
@@ -41,12 +41,13 @@ export function BlogItem({ blog }: IBlogItemProps) {
           </div>
         </div>
         <h2 className="text-xl font-semibold leading-tight">
-          <Link
+          <SubdomainLink
             href={`/${blog.slug}`}
             className="hover:text-primary transition-colors group-hover:text-primary"
+            subdomain="blog"
           >
             {blog.title}
-          </Link>
+          </SubdomainLink>
         </h2>
       </CardHeader>
       <CardContent className="flex-1">
@@ -63,7 +64,9 @@ export function BlogItem({ blog }: IBlogItemProps) {
           asChild
           className="w-full justify-start group-hover:bg-primary/10"
         >
-          <Link href={`/${blog.slug}`}>Read more →</Link>
+          <SubdomainLink href={`/${blog.slug}`} subdomain="blog">
+            Read more →
+          </SubdomainLink>
         </Button>
       </CardFooter>
     </Card>

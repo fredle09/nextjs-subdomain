@@ -4,7 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 import Show from "@/components/show";
 import Mapping from "@/components/mapping";
-import { BlogItem } from "@/features/blog/item";
+import BlogItem from "@/features/blog/item";
 
 import { useFilterHooks } from "./hooks";
 import { getFilteredBlogsOptions } from "../utils";
