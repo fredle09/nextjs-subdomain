@@ -57,6 +57,7 @@ function SectionLink(link: (typeof LIST_FOOTER_LINK)[number]["links"][number]) {
       <Link
         href={link.href}
         className="text-gray-400 hover:text-white transition-colors duration-200"
+        prefetch={false}
       >
         {link.name}
       </Link>
