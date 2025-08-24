@@ -122,7 +122,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <footer className="border-t pt-8">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <Button asChild variant="outline">
-                <Link href="/blog">
+                <Link href="/">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   All Posts
                 </Link>
