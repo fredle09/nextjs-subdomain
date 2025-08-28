@@ -3,6 +3,19 @@ export interface IBlog {
   title: string;
   slug: string;
   content: string;
+  excerpt?: string | null;
+  author: string;
+  published: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Legacy interface for backward compatibility
+export interface IBlogLegacy {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
   excerpt?: string;
   author: string;
   published: boolean;

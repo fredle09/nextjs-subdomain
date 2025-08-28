@@ -1,57 +1,27 @@
-import path from "path";
-import Database from "better-sqlite3";
+import { PrismaClient } from '@prisma/client';
 
-// Create database instance
-const dbPath = path.join(process.cwd(), "blog.db");
-const db = new Database(dbPath);
-
-// Enable foreign keys
-db.pragma("foreign_keys = ON");
-
-// Create blogs table if it doesn't exist
-db.exec(`
-  CREATE TABLE IF NOT EXISTS blogs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    slug TEXT UNIQUE NOT NULL,
-    content TEXT NOT NULL,
-    excerpt TEXT,
-    author TEXT NOT NULL,
-    published BOOLEAN DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )
-`);
-
-// Create trigger to update updated_at column
-db.exec(`
-  CREATE TRIGGER IF NOT EXISTS update_blogs_updated_at
-  AFTER UPDATE ON blogs
-  BEGIN
-    UPDATE blogs SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-  END
-`);
+const prisma = new PrismaClient();
 
 const sampleBlogs = [
   {
-    title: "Getting Started with Next.js and SQLite",
-    slug: "getting-started-nextjs-sqlite",
-    content: `Next.js is a powerful React framework that makes building web applications a breeze. When combined with SQLite, you get a lightweight yet powerful database solution that's perfect for many applications.
+    title: "Getting Started with Next.js and PostgreSQL",
+    slug: "getting-started-nextjs-postgresql",
+    content: `Next.js is a powerful React framework that makes building web applications a breeze. When combined with PostgreSQL, you get a robust and scalable database solution that's perfect for many applications.
 
-In this blog post, we'll explore how to set up a blog system using Next.js and SQLite. We'll cover:
+In this blog post, we'll explore how to set up a blog system using Next.js and PostgreSQL with Prisma. We'll cover:
 
-1. Setting up the database schema
+1. Setting up the database schema with Prisma
 2. Creating API routes for CRUD operations
 3. Building a user-friendly interface
 4. Implementing server-side rendering for better SEO
 
-SQLite is an excellent choice for smaller applications because it requires no server setup and stores data in a single file. It's perfect for blogs, portfolios, and other content-driven sites.
+PostgreSQL is an excellent choice for applications that need ACID compliance, complex queries, and scalability. It's perfect for blogs, e-commerce sites, and enterprise applications.
 
-The combination of Next.js's powerful features like server-side rendering, API routes, and file-based routing with SQLite's simplicity makes for a great development experience.
+The combination of Next.js's powerful features like server-side rendering, API routes, and file-based routing with PostgreSQL's robustness and Prisma's type-safe ORM makes for an exceptional development experience.
 
-Whether you're building a personal blog or a company website, this stack provides the flexibility and performance you need while keeping things simple and maintainable.`,
+Whether you're building a personal blog or a company website, this stack provides the flexibility, performance, and type safety you need while maintaining excellent developer experience.`,
     excerpt:
-      "Learn how to build a modern blog system using Next.js and SQLite. This guide covers database setup, API routes, and creating a user-friendly interface.",
+      "Learn how to build a modern blog system using Next.js, PostgreSQL, and Prisma. This guide covers database setup, API routes, and creating a type-safe interface.",
     author: "John Doe",
     published: true,
   },
@@ -161,27 +131,16 @@ async function seedDatabase() {
   console.log("Seeding database with sample blog posts...");
 
   try {
-    // Prepare statements
-    const checkStmt = db.prepare("SELECT id FROM blogs WHERE slug = ?");
-    const insertStmt = db.prepare(`
-      INSERT INTO blogs (title, slug, content, excerpt, author, published)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `);
-
     for (const blog of sampleBlogs) {
-      const existing = checkStmt.get(blog.slug);
+      const existing = await prisma.blog.findUnique({
+        where: { slug: blog.slug },
+      });
+
       if (!existing) {
-        const result = insertStmt.run(
-          blog.title,
-          blog.slug,
-          blog.content,
-          blog.excerpt || null,
-          blog.author,
-          blog.published ? 1 : 0
-        );
-        console.log(
-          `Created blog: ${blog.title} (ID: ${result.lastInsertRowid})`
-        );
+        const result = await prisma.blog.create({
+          data: blog,
+        });
+        console.log(`Created blog: ${blog.title} (ID: ${result.id})`);
       } else {
         console.log(`Blog already exists: ${blog.title}`);
       }
@@ -190,20 +149,20 @@ async function seedDatabase() {
     console.log("Database seeding completed successfully!");
 
     // Show summary
-    const totalCount = db.prepare("SELECT COUNT(*) as count FROM blogs").get();
-    const publishedCount = db
-      .prepare("SELECT COUNT(*) as count FROM blogs WHERE published = 1")
-      .get();
+    const totalCount = await prisma.blog.count();
+    const publishedCount = await prisma.blog.count({
+      where: { published: true },
+    });
 
     console.log(`\nSummary:`);
-    console.log(`- Total blogs: ${totalCount.count}`);
-    console.log(`- Published blogs: ${publishedCount.count}`);
-    console.log(`- Draft blogs: ${totalCount.count - publishedCount.count}`);
+    console.log(`- Total blogs: ${totalCount}`);
+    console.log(`- Published blogs: ${publishedCount}`);
+    console.log(`- Draft blogs: ${totalCount - publishedCount}`);
   } catch (error) {
     console.error("Error seeding database:", error);
     process.exit(1);
   } finally {
-    db.close();
+    await prisma.$disconnect();
   }
 }
 

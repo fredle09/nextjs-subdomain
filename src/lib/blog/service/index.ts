@@ -1,61 +1,75 @@
-import db from "@/lib/database";
+import prisma from "@/lib/database";
 
-import type { TBlogDetailVM, IBlogVM } from "@/types/blog";
+import type { TBlogDetailVM, IBlogVM, IBlog } from "@/types/blog";
 
-function getAllBlogs(published?: boolean): IBlogVM[] {
-  let query = "SELECT * FROM blogs";
-  const params = [];
+function addWordCount(blog: IBlog): IBlogVM {
+  const wordCount = blog.content.split(/\s+/).length;
+  return {
+    id: blog.id,
+    title: blog.title,
+    slug: blog.slug,
+    excerpt: blog.excerpt,
+    author: blog.author,
+    published: blog.published,
+    createdAt: blog.createdAt,
+    updatedAt: blog.updatedAt,
+    wordCount,
+  };
+}
 
-  if (published !== undefined) {
-    query += " WHERE published = ?";
-    params.push(published ? 1 : 0);
+async function getAllBlogs(published?: boolean): Promise<IBlogVM[]> {
+  const where = published !== undefined ? { published } : {};
+  
+  const blogs = await prisma.blog.findMany({
+    where,
+    orderBy: { createdAt: 'desc' },
+  });
+  
+  return blogs.map(addWordCount);
+}
+
+async function getBlogById(id: number): Promise<TBlogDetailVM | null> {
+  return prisma.blog.findUnique({
+    where: { id },
+  });
+}
+
+async function getBlogBySlug(slug: string): Promise<TBlogDetailVM | null> {
+  return prisma.blog.findUnique({
+    where: { slug },
+  });
+}
+
+async function deleteBlog(id: number): Promise<boolean> {
+  try {
+    await prisma.blog.delete({
+      where: { id },
+    });
+    return true;
+  } catch {
+    return false;
   }
-
-  query += " ORDER BY created_at DESC";
-
-  const stmt = db.prepare(query);
-  return stmt.all(...params) as IBlogVM[];
 }
 
-function getBlogById(id: number): TBlogDetailVM | null {
-  const stmt = db.prepare("SELECT * FROM blogs WHERE id = ?");
-  const result = stmt.get(id) as TBlogDetailVM | undefined;
-  return result || null;
-}
-
-function getBlogBySlug(slug: string): TBlogDetailVM | null {
-  const stmt = db.prepare("SELECT * FROM blogs WHERE slug = ?");
-  const result = stmt.get(slug) as TBlogDetailVM | undefined;
-  return result || null;
-}
-
-function deleteBlog(id: number): boolean {
-  const stmt = db.prepare("DELETE FROM blogs WHERE id = ?");
-  const result = stmt.run(id);
-  return result.changes > 0;
-}
-
-function getPublishedBlogs(
+async function getPublishedBlogs(
   page: number = 1,
   limit: number = 10
-): { blogs: IBlogVM[]; total: number } {
+): Promise<{ blogs: IBlogVM[]; total: number }> {
   const offset = (page - 1) * limit;
 
-  const countStmt = db.prepare(
-    "SELECT COUNT(*) as count FROM blogs WHERE published = 1"
-  );
-  const total = (countStmt.get() as { count: number }).count;
+  const [blogs, total] = await Promise.all([
+    prisma.blog.findMany({
+      where: { published: true },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
+    }),
+    prisma.blog.count({
+      where: { published: true },
+    }),
+  ]);
 
-  const stmt = db.prepare(`
-      SELECT * FROM blogs 
-      WHERE published = 1 
-      ORDER BY created_at DESC 
-      LIMIT ? OFFSET ?
-    `);
-
-  const blogs = stmt.all(limit, offset) as IBlogVM[];
-
-  return { blogs, total };
+  return { blogs: blogs.map(addWordCount), total };
 }
 
 export interface IGetFilteredBlogsProps {
@@ -66,10 +80,10 @@ export interface IGetFilteredBlogsProps {
   limit?: number;
 }
 
-function getFilteredBlogs(params: IGetFilteredBlogsProps): {
+async function getFilteredBlogs(params: IGetFilteredBlogsProps): Promise<{
   blogs: IBlogVM[];
   total: number;
-} {
+}> {
   const {
     search = "",
     sortBy = "date",
@@ -79,49 +93,61 @@ function getFilteredBlogs(params: IGetFilteredBlogsProps): {
   } = params;
 
   const offset = (page - 1) * limit;
-  let whereClause = "WHERE published = 1";
-  let orderClause = "ORDER BY";
-  const queryParams: unknown[] = [];
-
+  
+  interface WhereClause {
+    published: boolean;
+    OR?: Array<{
+      title?: { contains: string; mode: 'insensitive' };
+      content?: { contains: string; mode: 'insensitive' };
+      author?: { contains: string; mode: 'insensitive' };
+    }>;
+  }
+  
+  const where: WhereClause = { published: true };
+  
   if (search.trim()) {
-    whereClause += " AND (title LIKE ? OR content LIKE ? OR author LIKE ?)";
-    const searchTerm = `%${search.trim()}%`;
-    queryParams.push(searchTerm, searchTerm, searchTerm);
+    const searchTerm = search.trim();
+    where.OR = [
+      { title: { contains: searchTerm, mode: 'insensitive' } },
+      { content: { contains: searchTerm, mode: 'insensitive' } },
+      { author: { contains: searchTerm, mode: 'insensitive' } },
+    ];
   }
 
+  const orderBy: Record<string, string> = {};
   switch (sortBy) {
     case "title":
-      orderClause += ` title ${sortOrder.toUpperCase()}`;
+      orderBy.title = sortOrder;
       break;
     case "author":
-      orderClause += ` author ${sortOrder.toUpperCase()}`;
+      orderBy.author = sortOrder;
       break;
     case "date":
     default:
-      orderClause += ` created_at ${sortOrder.toUpperCase()}`;
+      orderBy.createdAt = sortOrder;
       break;
   }
 
-  const countQuery = `SELECT COUNT(id) as count FROM blogs ${whereClause}`;
-  const countStmt = db.prepare(countQuery);
-  const total = (countStmt.get(...queryParams) as { count: number }).count;
+  const [blogs, total] = await Promise.all([
+    prisma.blog.findMany({
+      where,
+      orderBy,
+      take: limit,
+      skip: offset,
+    }),
+    prisma.blog.count({ where }),
+  ]);
 
-  const dataQuery = `
-    SELECT * FROM blogs 
-    ${whereClause} 
-    ${orderClause} 
-    LIMIT ? OFFSET ?
-  `;
-  const stmt = db.prepare(dataQuery);
-  const blogs = stmt.all(...queryParams, limit, offset) as IBlogVM[];
-
-  return { blogs, total };
+  return { blogs: blogs.map(addWordCount), total };
 }
 
-function getAllSlugs(): string[] {
-  const stmt = db.prepare("SELECT slug FROM blogs WHERE published = 1");
-  const rows = stmt.all() as { slug: string }[];
-  return rows.map((row) => row.slug);
+async function getAllSlugs(): Promise<string[]> {
+  const blogs = await prisma.blog.findMany({
+    where: { published: true },
+    select: { slug: true },
+  });
+  
+  return blogs.map((blog: { slug: string }) => blog.slug);
 }
 
 export const BlogService = {
