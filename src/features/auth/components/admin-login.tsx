@@ -1,0 +1,211 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Mail, Lock, AlertCircle, Shield } from "lucide-react";
+
+import Show from "@/components/show";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import GoogleIcon from "@/components/icons/google-icon";
+import { ButtonV1 } from "@/components/extend/button/v1";
+import { PasswordInput } from "@/components/ui/password-input";
+
+import { loginSchema } from "../schemas";
+import {
+  useLoginMutation,
+  useGoogleLoginMutation,
+} from "../hooks/use-auth-mutations";
+
+import type { TLoginFormData } from "../schemas";
+
+export default function AdminLogin() {
+  const loginMutation = useLoginMutation();
+  const googleLoginMutation = useGoogleLoginMutation();
+
+  const form = useForm<TLoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
+  const { formState, register, handleSubmit, setError, clearErrors } = form;
+  const { errors, isSubmitting } = formState;
+
+  const isLoading =
+    isSubmitting || loginMutation.isPending || googleLoginMutation.isPending;
+
+  const onSubmit = async (data: TLoginFormData) => {
+    try {
+      clearErrors();
+      await loginMutation.mutateAsync(data);
+    } catch (error: any) {
+      // Handle specific validation errors from server
+      if (error?.response?.data?.errors) {
+        const serverErrors = error.response.data.errors;
+        Object.keys(serverErrors).forEach((field) => {
+          setError(field as keyof TLoginFormData, {
+            message: serverErrors[field],
+          });
+        });
+      } else {
+        setError("root", {
+          message:
+            error?.response?.data?.message || "Login failed. Please try again.",
+        });
+      }
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      clearErrors();
+      await googleLoginMutation.mutateAsync();
+    } catch (error) {
+      console.error("Google login error:", error);
+    }
+  };
+
+  return (
+    <div className="flex flex-col space-y-4 text-center">
+      <div className="flex flex-col space-y-2">
+        <div className="flex items-center justify-center mb-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+            <Shield className="h-5 w-5 text-primary" />
+          </div>
+        </div>
+        <h1 className="text-2xl font-semibold tracking-tight">Admin Login</h1>
+        <p className="text-sm text-muted-foreground">
+          Enter your credentials to access the admin panel
+        </p>
+      </div>
+
+      <Show when={errors.root}>
+        {({ message }) => (
+          <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <span>{message}</span>
+          </div>
+        )}
+      </Show>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div className="grid gap-2 text-left">
+          <Label htmlFor="email">Email</Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="email"
+              placeholder="admin@example.com"
+              type="email"
+              autoCapitalize="none"
+              autoComplete="email"
+              autoCorrect="off"
+              disabled={isLoading}
+              {...register("email")}
+              className={`pl-10 ${
+                errors.email
+                  ? "border-destructive focus-visible:ring-destructive/20"
+                  : ""
+              }`}
+            />
+          </div>
+          {errors.email && (
+            <p className="text-sm text-destructive">{errors.email.message}</p>
+          )}
+        </div>
+
+        <div className="grid gap-2 text-left">
+          <Label htmlFor="password">Password</Label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <PasswordInput
+              id="password"
+              placeholder="Enter your password"
+              autoComplete="current-password"
+              disabled={isLoading}
+              {...register("password")}
+              className={`pl-10 ${
+                errors.password
+                  ? "border-destructive focus-visible:ring-destructive/20"
+                  : ""
+              }`}
+            />
+          </div>
+          {errors.password && (
+            <p className="text-sm text-destructive">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-2 text-left">
+          <input
+            id="remember"
+            type="checkbox"
+            {...register("rememberMe")}
+            className="rounded border-input"
+            disabled={isLoading}
+          />
+          <Label
+            htmlFor="remember"
+            className="text-sm font-normal cursor-pointer"
+          >
+            Remember me for 30 days
+          </Label>
+        </div>
+
+        <ButtonV1
+          loading={{
+            when: isLoading,
+            text: "Signing In...",
+          }}
+          className="w-full"
+          type="submit"
+        >
+          Sign In
+        </ButtonV1>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        <ButtonV1
+          variant="outline"
+          type="button"
+          loading={{
+            when: googleLoginMutation.isPending,
+            text: "Signing in with Google...",
+            align: "end",
+          }}
+          startChild={<GoogleIcon className="mr-2 h-4 w-4" />}
+          onClick={handleGoogleLogin}
+          className="w-full"
+        >
+          Continue with Google
+        </ButtonV1>
+      </form>
+
+      <div className="text-center text-sm space-y-2">
+        <a
+          href="#"
+          className="text-muted-foreground hover:text-primary underline underline-offset-4"
+        >
+          Forgot your password?
+        </a>
+        <div className="text-xs text-muted-foreground">
+          Demo credentials: admin@example.com / admin123
+        </div>
+      </div>
+    </div>
+  );
+}
