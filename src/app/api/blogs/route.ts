@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    const result = BlogService.getFilteredBlogs(params);
+    const result = await BlogService.getFilteredBlogs(params);
     return Response.json(result);
   } catch (error) {
     console.error("Error fetching blogs:", error);

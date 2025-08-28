@@ -23,7 +23,7 @@ export async function generateMetadata({
   params,
 }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const blog = BlogService.getBlogBySlug(slug);
+  const blog = await BlogService.getBlogBySlug(slug);
 
   if (!blog) {
     return {
@@ -38,13 +38,13 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-  const slugs = BlogService.getAllSlugs();
+  const slugs = await BlogService.getAllSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const blog = BlogService.getBlogBySlug(slug);
+  const blog = await BlogService.getBlogBySlug(slug);
 
   if (!blog || !blog.published) {
     return notFound();
@@ -82,8 +82,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
               <div className="flex items-center gap-2">
                 <CalendarDays className="w-4 h-4" />
-                <time dateTime={blog.created_at}>
-                  {new Date(blog.created_at).toLocaleDateString("en-US", {
+                <time dateTime={blog.createdAt.toISOString()}>
+                  {blog.createdAt.toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
@@ -91,12 +91,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 </time>
               </div>
 
-              <Show when={blog.updated_at !== blog.created_at}>
+              <Show when={blog.updatedAt.getTime() !== blog.createdAt.getTime()}>
                 <Separator orientation="vertical" className="h-4" />
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
                   <span>
-                    Updated {new Date(blog.updated_at).toLocaleDateString()}
+                    Updated {blog.updatedAt.toLocaleDateString()}
                   </span>
                 </div>
               </Show>

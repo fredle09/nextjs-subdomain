@@ -25,7 +25,7 @@ export default function BlogItem({ blog }: IBlogItemProps) {
         <div className="flex items-center justify-between mb-3">
           <Badge variant="secondary" className="text-xs">
             <CalendarDays className="w-3 h-3 mr-1" />
-            {new Date(blog.created_at).toLocaleDateString()}
+            {blog.createdAt.toLocaleDateString()}
           </Badge>
           <div className="flex items-center gap-2">
             <Avatar className="w-6 h-6">
