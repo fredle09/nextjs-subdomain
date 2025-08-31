@@ -1,3 +1,5 @@
+import { SubdomainProvider } from "@/features/sub-domain/SubdomainProvider";
+
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,8 +16,8 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background">
-      {children}
-    </div>
+    <SubdomainProvider subdomain="admin">
+      <div className="min-h-screen bg-background">{children}</div>
+    </SubdomainProvider>
   );
 }

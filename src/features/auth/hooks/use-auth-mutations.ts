@@ -21,7 +21,7 @@ export const useLoginMutation = () => {
       toast.success("Login successful!");
 
       // Redirect to admin dashboard
-      window.location.href = "/admin";
+      window.location.href = "/";
     },
     onError: (error: unknown) => {
       const axiosError = error as {
@@ -59,7 +59,7 @@ export const useGoogleLoginMutation = () => {
       toast.success("Google login successful!");
 
       // Redirect to admin dashboard
-      window.location.href = "/admin";
+      window.location.href = "/";
     },
     onError: (error: unknown) => {
       const axiosError = error as {
@@ -95,7 +95,7 @@ export const useLogoutMutation = () => {
       toast.success("Logged out successfully!");
 
       // Redirect to login
-      window.location.href = "/admin/login";
+      window.location.href = "/login";
     },
     onError: (error: unknown) => {
       const axiosError = error as {
