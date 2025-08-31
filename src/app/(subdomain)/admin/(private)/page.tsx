@@ -54,7 +54,9 @@ export default function AdminDashboard() {
 
             <div className="mt-6 pt-6 border-t">
               <Button asChild>
-                <Link href="/login">Back to Login</Link>
+                <SubdomainLink subdomain="admin" href="/login">
+                  Back to Login
+                </SubdomainLink>
               </Button>
             </div>
           </div>

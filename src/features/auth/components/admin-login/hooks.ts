@@ -29,16 +29,12 @@ export const useAdminLoginHook = () => {
       clearErrors();
       return loginMutation.mutateAsync(data);
     },
-    [loginMutation, clearErrors, setError]
+    [loginMutation, clearErrors]
   );
 
   const handleGoogleLogin = useCallback(async () => {
-    try {
-      clearErrors();
-      await googleLoginMutation.mutateAsync();
-    } catch (error) {
-      console.error("Google login error:", error);
-    }
+    clearErrors();
+    return googleLoginMutation.mutateAsync();
   }, [googleLoginMutation, clearErrors]);
 
   return {
