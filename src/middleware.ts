@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
 
 import {
   getSubdomain,
@@ -11,12 +12,29 @@ import {
 
 import type { NextRequest } from "next/server";
 
+const PRIVATE_ROUTERS_FOR_ADMIN = ["/admin"];
+
 export async function middleware(req: NextRequest) {
   const { nextUrl, headers } = req;
   const url = nextUrl.clone();
   const { pathname, protocol } = url;
   const host = headers.get("host") || null;
   const subdomain = getSubdomain(host);
+  const session = getSessionCookie(req);
+
+  // TODO: Implement role-based access control
+  if (
+    PRIVATE_ROUTERS_FOR_ADMIN.some(
+      (privatePathname) =>
+        privatePathname === pathname ||
+        privatePathname.startsWith(`${pathname}/`)
+    ) &&
+    subdomain === ORIGIN_SUBDOMAIN &&
+    !session
+  ) {
+    const url = new URL("/admin/login", req.url);
+    return NextResponse.redirect(url);
+  }
 
   if (subdomain === ORIGIN_SUBDOMAIN) {
     const redirectSubdomain = checkRedirectSubdomain(pathname);

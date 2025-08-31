@@ -2,11 +2,9 @@ import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { useLoginMutation } from "../../hooks/use-login";
 import { loginSchema, TLoginFormData } from "../../schemas";
-import {
-  useLoginMutation,
-  useGoogleLoginMutation,
-} from "../../hooks/use-auth-mutations";
+import { useGoogleLoginMutation } from "../../hooks/use-google-login";
 
 export const useAdminLoginHook = () => {
   const loginMutation = useLoginMutation();
@@ -20,50 +18,23 @@ export const useAdminLoginHook = () => {
       rememberMe: false,
     },
   });
-  const { control, formState, handleSubmit, setError, clearErrors } = form;
+  const { control, formState, handleSubmit, clearErrors } = form;
   const { errors, isSubmitting } = formState;
 
   const isLoading =
     isSubmitting || loginMutation.isPending || googleLoginMutation.isPending;
 
-  const onSubmit = useCallback(async (data: TLoginFormData) => {
-    try {
+  const onSubmit = useCallback(
+    async (data: TLoginFormData) => {
       clearErrors();
-      await loginMutation.mutateAsync(data);
-    } catch (error: unknown) {
-      const axiosError = error as {
-        response?: {
-          data?: {
-            errors?: Record<string, string>;
-            message?: string;
-          };
-        };
-      };
-      // Handle specific validation errors from server
-      if (axiosError?.response?.data?.errors) {
-        const serverErrors = axiosError.response.data.errors;
-        Object.keys(serverErrors).forEach((field) => {
-          setError(field as keyof TLoginFormData, {
-            message: serverErrors[field],
-          });
-        });
-      } else {
-        setError("root", {
-          message:
-            axiosError?.response?.data?.message ||
-            "Login failed. Please try again.",
-        });
-      }
-    }
-  }, [loginMutation, clearErrors, setError]);
+      return loginMutation.mutateAsync(data);
+    },
+    [loginMutation, clearErrors]
+  );
 
   const handleGoogleLogin = useCallback(async () => {
-    try {
-      clearErrors();
-      await googleLoginMutation.mutateAsync();
-    } catch (error) {
-      console.error("Google login error:", error);
-    }
+    clearErrors();
+    return googleLoginMutation.mutateAsync();
   }, [googleLoginMutation, clearErrors]);
 
   return {

@@ -20,6 +20,12 @@ export default function SubdomainLink({
     return <Link href={hrefProps} {...props} />;
   }
 
+  if (!subdomain) {
+    const hrefString =
+      typeof hrefProps === "string" ? hrefProps : format(hrefProps);
+    return <Link href={`/${subdomainProps}${hrefString}`} {...props} />;
+  }
+
   const hrefString =
     typeof hrefProps === "string" ? hrefProps : format(hrefProps);
   const newHost = getRedirectUrl({

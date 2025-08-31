@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -54,7 +53,9 @@ export default function AdminDashboard() {
 
             <div className="mt-6 pt-6 border-t">
               <Button asChild>
-                <Link href="/login">Back to Login</Link>
+                <SubdomainLink subdomain="admin" href="/login">
+                  Back to Login
+                </SubdomainLink>
               </Button>
             </div>
           </div>
