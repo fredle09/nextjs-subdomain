@@ -27,7 +27,7 @@ export interface IFormFieldProps<
 > {
   name: TName;
   label?: React.ReactNode;
-  control: Control<TFieldValues, any>;
+  control: Control<TFieldValues>;
   labelProps?: Omit<React.ComponentProps<typeof FormLabel>, "children">;
   formItemProps?: Omit<React.ComponentProps<"div">, "children">;
   isShowErrorMessage?: boolean;

@@ -17,25 +17,20 @@ export interface ILoginResponse {
   refreshToken?: string;
 }
 
-export interface IGoogleLoginResponse extends ILoginResponse {}
-
 export const authService = {
   login: async (credentials: ILoginCredentials): Promise<ILoginResponse> => {
-    const response = await api.post("/auth/login", credentials);
-    return response.data;
+    return api.post("/auth/login", credentials);
   },
 
-  googleLogin: async (): Promise<IGoogleLoginResponse> => {
-    const response = await api.post("/auth/google");
-    return response.data;
+  googleLogin: async (): Promise<ILoginResponse> => {
+    return api.post("/auth/google");
   },
 
   logout: async (): Promise<void> => {
-    await api.post("/auth/logout");
+    return api.post("/auth/logout");
   },
 
   refreshToken: async (refreshToken: string): Promise<ILoginResponse> => {
-    const response = await api.post("/auth/refresh", { refreshToken });
-    return response.data;
+    return api.post("/auth/refresh", { refreshToken });
   },
 };

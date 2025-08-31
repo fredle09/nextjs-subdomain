@@ -40,7 +40,7 @@ const ButtonV1 = React.forwardRef<HTMLButtonElement, IButtonV1Props>(
           />
         )
       );
-    }, [loading?.Indicator, size]);
+    }, [Indicator, size]);
 
     const finalStartChild =
       isLoading && loadingAlign === "start" ? LoadingIndicator : startChild;

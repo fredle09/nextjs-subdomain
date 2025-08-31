@@ -23,12 +23,20 @@ export const useLoginMutation = () => {
       // Redirect to admin dashboard
       window.location.href = "/admin";
     },
-    onError: (error: any) => {
-      console.error("Login error:", error);
+    onError: (error: unknown) => {
+      const axiosError = error as {
+        response?: {
+          data?: {
+            message?: string;
+          };
+        };
+        message?: string;
+      };
+      console.error("Login error:", axiosError);
 
       const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
+        axiosError?.response?.data?.message ||
+        axiosError?.message ||
         "Login failed. Please try again.";
 
       toast.error(errorMessage);
@@ -51,14 +59,22 @@ export const useGoogleLoginMutation = () => {
       toast.success("Google login successful!");
 
       // Redirect to admin dashboard
-      window.location.href = "/admin/dashboard";
+      window.location.href = "/admin";
     },
-    onError: (error: any) => {
-      console.error("Google login error:", error);
+    onError: (error: unknown) => {
+      const axiosError = error as {
+        response?: {
+          data?: {
+            message?: string;
+          };
+        };
+        message?: string;
+      };
+      console.error("Google login error:", axiosError);
 
       const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
+        axiosError?.response?.data?.message ||
+        axiosError?.message ||
         "Google login failed. Please try again.";
 
       toast.error(errorMessage);
@@ -81,8 +97,16 @@ export const useLogoutMutation = () => {
       // Redirect to login
       window.location.href = "/admin/login";
     },
-    onError: (error: any) => {
-      console.error("Logout error:", error);
+    onError: (error: unknown) => {
+      const axiosError = error as {
+        response?: {
+          data?: {
+            message?: string;
+          };
+        };
+        message?: string;
+      };
+      console.error("Logout error:", axiosError);
       toast.error("Logout failed. Please try again.");
     },
   });

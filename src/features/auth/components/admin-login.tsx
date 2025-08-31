@@ -43,10 +43,18 @@ export default function AdminLogin() {
     try {
       clearErrors();
       await loginMutation.mutateAsync(data);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as {
+        response?: {
+          data?: {
+            errors?: Record<string, string>;
+            message?: string;
+          };
+        };
+      };
       // Handle specific validation errors from server
-      if (error?.response?.data?.errors) {
-        const serverErrors = error.response.data.errors;
+      if (axiosError?.response?.data?.errors) {
+        const serverErrors = axiosError.response.data.errors;
         Object.keys(serverErrors).forEach((field) => {
           setError(field as keyof TLoginFormData, {
             message: serverErrors[field],
@@ -55,7 +63,7 @@ export default function AdminLogin() {
       } else {
         setError("root", {
           message:
-            error?.response?.data?.message || "Login failed. Please try again.",
+            axiosError?.response?.data?.message || "Login failed. Please try again.",
         });
       }
     }
