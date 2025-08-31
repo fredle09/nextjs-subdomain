@@ -22,10 +22,6 @@ export const authService = {
     return api.post("/auth/login", credentials);
   },
 
-  googleLogin: async (): Promise<ILoginResponse> => {
-    return api.post("/auth/google");
-  },
-
   logout: async (): Promise<void> => {
     return api.post("/auth/logout");
   },

@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import HeroSection from "@/features/landing/hero-section";
@@ -15,7 +17,9 @@ export default function Home() {
       <main>
         <HeroSection />
         <AboutSection />
-        <BridgeBlogSection />
+        <Suspense>
+          <BridgeBlogSection />
+        </Suspense>
       </main>
       <Footer />
     </div>
