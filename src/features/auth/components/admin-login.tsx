@@ -5,11 +5,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, AlertCircle, Shield } from "lucide-react";
 
 import Show from "@/components/show";
-import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { InputV1 } from "@/components/extend/input/v1";
 import GoogleIcon from "@/components/icons/google-icon";
 import { ButtonV1 } from "@/components/extend/button/v1";
 import { PasswordInputV1 } from "@/components/extend/password-input/v1";
+import {
+  Form,
+  FormItem,
+  FormField,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 
 import { loginSchema } from "../schemas";
 import {
@@ -31,7 +39,7 @@ export default function AdminLogin() {
       rememberMe: false,
     },
   });
-  const { formState, register, handleSubmit, setError, clearErrors } = form;
+  const { control, formState, handleSubmit, setError, clearErrors } = form;
   const { errors, isSubmitting } = formState;
 
   const isLoading =
@@ -91,99 +99,112 @@ export default function AdminLogin() {
         )}
       </Show>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid gap-2 text-left">
-          <Label htmlFor="email">Email</Label>
-          <InputV1
-            id="email"
-            placeholder="admin@example.com"
-            type="email"
-            startChild={<Mail className="h-4 w-4 text-muted-foreground" />}
-            autoCapitalize="none"
-            autoComplete="email"
-            autoCorrect="off"
-            disabled={isLoading}
-            aria-invalid={!!errors.email}
-            {...register("email")}
-          />
-          <Show when={errors.email}>
-            {({ message }) => (
-              <p className="text-sm text-destructive">{message}</p>
+      <Form {...form}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={control}
+            name="email"
+            render={({ field, fieldState: { error } }) => (
+              <FormItem className="text-left">
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <InputV1
+                    type="email"
+                    disabled={isLoading}
+                    startChild={<Mail className="size-4" />}
+                    placeholder="admin@example.com"
+                    autoCorrect="off"
+                    autoComplete="email"
+                    aria-invalid={!!error}
+                    autoCapitalize="none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </Show>
-        </div>
-
-        <div className="grid gap-2 text-left">
-          <Label htmlFor="password">Password</Label>
-          <PasswordInputV1
-            id="password"
-            placeholder="Enter your password"
-            autoComplete="current-password"
-            disabled={isLoading}
-            startChild={<Lock className="h-4 w-4 text-muted-foreground" />}
-            aria-invalid={!!errors.password}
-            {...register("password")}
           />
-          <Show when={errors.password}>
-            {({ message }) => (
-              <p className="text-sm text-destructive">{message}</p>
+
+          <FormField
+            control={control}
+            name="password"
+            render={({ field, fieldState: { error } }) => (
+              <FormItem className="text-left">
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <PasswordInputV1
+                    aria-invalid={!!error}
+                    startChild={
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+                    }
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </Show>
-        </div>
-
-        <div className="flex items-center space-x-2 text-left">
-          <input
-            id="remember"
-            type="checkbox"
-            {...register("rememberMe")}
-            className="rounded border-input"
-            disabled={isLoading}
           />
-          <Label
-            htmlFor="remember"
-            className="text-sm font-normal cursor-pointer"
+
+          <FormField
+            control={control}
+            name="rememberMe"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-2 space-y-0 text-left">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={isLoading}
+                  />
+                </FormControl>
+                <FormLabel className="text-sm font-normal cursor-pointer">
+                  Remember me for 30 days
+                </FormLabel>
+              </FormItem>
+            )}
+          />
+
+          <ButtonV1
+            loading={{
+              when: isLoading,
+              text: "Signing In...",
+            }}
+            className="w-full"
+            type="submit"
           >
-            Remember me for 30 days
-          </Label>
-        </div>
+            Sign In
+          </ButtonV1>
 
-        <ButtonV1
-          loading={{
-            when: isLoading,
-            text: "Signing In...",
-          }}
-          className="w-full"
-          type="submit"
-        >
-          Sign In
-        </ButtonV1>
-
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
           </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
 
-        <ButtonV1
-          variant="outline"
-          type="button"
-          loading={{
-            when: googleLoginMutation.isPending,
-            text: "Signing in with Google...",
-            align: "end",
-          }}
-          startChild={<GoogleIcon className="mr-2 h-4 w-4" />}
-          onClick={handleGoogleLogin}
-          className="w-full"
-        >
-          Continue with Google
-        </ButtonV1>
-      </form>
+          <ButtonV1
+            variant="outline"
+            type="button"
+            loading={{
+              when: googleLoginMutation.isPending,
+              text: "Signing in with Google...",
+              align: "end",
+            }}
+            startChild={<GoogleIcon className="mr-2 h-4 w-4" />}
+            onClick={handleGoogleLogin}
+            className="w-full"
+          >
+            Continue with Google
+          </ButtonV1>
+        </form>
+      </Form>
     </div>
   );
 }
