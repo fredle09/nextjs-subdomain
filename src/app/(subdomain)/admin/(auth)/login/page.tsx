@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
-
 import AdminLogin from "@/features/auth/components/admin-login";
+
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Admin Login",
