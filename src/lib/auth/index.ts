@@ -20,11 +20,12 @@ export const auth = betterAuth({
     defaultCookieAttributes: {
       secure: process.env.NODE_ENV === "production",
     },
-    crossSubDomainCookies: {
-      ...(process.env.NODE_ENV === "production" && {
-        enabled: true,
-        domain: `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN!}`,
-      }),
-    },
+    crossSubDomainCookies:
+      process.env.NODE_ENV === "production"
+        ? {
+            enabled: true,
+            domain: `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN!}`,
+          }
+        : undefined,
   },
 });

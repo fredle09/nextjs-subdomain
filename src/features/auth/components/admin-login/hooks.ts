@@ -18,7 +18,7 @@ export const useAdminLoginHook = () => {
       rememberMe: false,
     },
   });
-  const { control, formState, handleSubmit, setError, clearErrors } = form;
+  const { control, formState, handleSubmit, clearErrors } = form;
   const { errors, isSubmitting } = formState;
 
   const isLoading =
