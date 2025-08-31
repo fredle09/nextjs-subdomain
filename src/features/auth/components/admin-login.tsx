@@ -5,11 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, AlertCircle, Shield } from "lucide-react";
 
 import Show from "@/components/show";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { InputV1 } from "@/components/extend/input/v1";
 import GoogleIcon from "@/components/icons/google-icon";
 import { ButtonV1 } from "@/components/extend/button/v1";
-import { PasswordInput } from "@/components/ui/password-input";
+import { PasswordInputV1 } from "@/components/extend/password-input/v1";
 
 import { loginSchema } from "../schemas";
 import {
@@ -94,51 +94,41 @@ export default function AdminLogin() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid gap-2 text-left">
           <Label htmlFor="email">Email</Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="email"
-              placeholder="admin@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading}
-              {...register("email")}
-              className={`pl-10 ${
-                errors.email
-                  ? "border-destructive focus-visible:ring-destructive/20"
-                  : ""
-              }`}
-            />
-          </div>
-          {errors.email && (
-            <p className="text-sm text-destructive">{errors.email.message}</p>
-          )}
+          <InputV1
+            id="email"
+            placeholder="admin@example.com"
+            type="email"
+            startChild={<Mail className="h-4 w-4 text-muted-foreground" />}
+            autoCapitalize="none"
+            autoComplete="email"
+            autoCorrect="off"
+            disabled={isLoading}
+            aria-invalid={!!errors.email}
+            {...register("email")}
+          />
+          <Show when={errors.email}>
+            {({ message }) => (
+              <p className="text-sm text-destructive">{message}</p>
+            )}
+          </Show>
         </div>
 
         <div className="grid gap-2 text-left">
           <Label htmlFor="password">Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <PasswordInput
-              id="password"
-              placeholder="Enter your password"
-              autoComplete="current-password"
-              disabled={isLoading}
-              {...register("password")}
-              className={`pl-10 ${
-                errors.password
-                  ? "border-destructive focus-visible:ring-destructive/20"
-                  : ""
-              }`}
-            />
-          </div>
-          {errors.password && (
-            <p className="text-sm text-destructive">
-              {errors.password.message}
-            </p>
-          )}
+          <PasswordInputV1
+            id="password"
+            placeholder="Enter your password"
+            autoComplete="current-password"
+            disabled={isLoading}
+            startChild={<Lock className="h-4 w-4 text-muted-foreground" />}
+            aria-invalid={!!errors.password}
+            {...register("password")}
+          />
+          <Show when={errors.password}>
+            {({ message }) => (
+              <p className="text-sm text-destructive">{message}</p>
+            )}
+          </Show>
         </div>
 
         <div className="flex items-center space-x-2 text-left">
@@ -194,18 +184,6 @@ export default function AdminLogin() {
           Continue with Google
         </ButtonV1>
       </form>
-
-      <div className="text-center text-sm space-y-2">
-        <a
-          href="#"
-          className="text-muted-foreground hover:text-primary underline underline-offset-4"
-        >
-          Forgot your password?
-        </a>
-        <div className="text-xs text-muted-foreground">
-          Demo credentials: admin@example.com / admin123
-        </div>
-      </div>
     </div>
   );
 }
