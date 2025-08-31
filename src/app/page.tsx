@@ -1,9 +1,12 @@
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
-
 import HeroSection from "@/features/landing/hero-section";
 import AboutSection from "@/features/landing/about-section";
 import BridgeBlogSection from "@/bridges/landing/blog/section";
+
+export const dynamic = "force-static";
+
+export const revalidate = 60;
 
 export default function Home() {
   return (

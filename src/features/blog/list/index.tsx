@@ -7,10 +7,10 @@ import Mapping from "@/components/mapping";
 import BlogItem from "@/features/blog/item";
 
 import { useFilterHooks } from "./hooks";
+import BlogListNotFound from "./not-found";
 import { getFilteredBlogsOptions } from "../utils";
 
 import type { IBlogsParams } from "@/types/blog-params";
-import BlogListNotFound from "./not-found";
 
 export function BlogList() {
   const {
