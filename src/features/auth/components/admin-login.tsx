@@ -5,19 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, AlertCircle, Shield } from "lucide-react";
 
 import Show from "@/components/show";
+import { Form } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FormField } from "@/components/extend/form";
 import { InputV1 } from "@/components/extend/input/v1";
 import GoogleIcon from "@/components/icons/google-icon";
 import { ButtonV1 } from "@/components/extend/button/v1";
 import { PasswordInputV1 } from "@/components/extend/password-input/v1";
-import {
-  Form,
-  FormItem,
-  FormField,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
 
 import { loginSchema } from "../schemas";
 import {
@@ -100,72 +94,55 @@ export default function AdminLogin() {
       </Show>
 
       <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={control}
-            name="email"
-            render={({ field, fieldState: { error } }) => (
-              <FormItem className="text-left">
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <InputV1
-                    type="email"
-                    disabled={isLoading}
-                    startChild={<Mail className="size-4" />}
-                    placeholder="admin@example.com"
-                    autoCorrect="off"
-                    autoComplete="email"
-                    aria-invalid={!!error}
-                    autoCapitalize="none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left">
+          <FormField control={control} name="email" label="Email">
+            {({ field }) => (
+              <InputV1
+                type="email"
+                disabled={isLoading}
+                startChild={<Mail className="size-4" />}
+                placeholder="admin@example.com"
+                autoCorrect="off"
+                autoComplete="email"
+                autoCapitalize="none"
+                {...field}
+              />
             )}
-          />
+          </FormField>
+
+          <FormField control={control} name="password" label="Password">
+            {({ field }) => (
+              <PasswordInputV1
+                disabled={isLoading}
+                startChild={<Lock className="size-4" />}
+                placeholder="Enter your password"
+                autoComplete="current-password"
+                {...field}
+              />
+            )}
+          </FormField>
 
           <FormField
-            control={control}
-            name="password"
-            render={({ field, fieldState: { error } }) => (
-              <FormItem className="text-left">
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <PasswordInputV1
-                    aria-invalid={!!error}
-                    startChild={
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
-                    }
-                    placeholder="Enter your password"
-                    autoComplete="current-password"
-                    disabled={isLoading}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
             name="rememberMe"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-2 space-y-0 text-left">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    disabled={isLoading}
-                  />
-                </FormControl>
-                <FormLabel className="text-sm font-normal cursor-pointer">
-                  Remember me for 30 days
-                </FormLabel>
-              </FormItem>
+            label="Remember me for 30 days"
+            control={control}
+            labelProps={{
+              className: "text-sm font-normal cursor-pointer",
+            }}
+            formItemProps={{
+              className:
+                "flex flex-row-reverse space-x-2 space-y-0 items-center justify-end",
+            }}
+            isShowErrorMessage={false}
+          >
+            {({ field: { value, onChange } }) => (
+              <Checkbox
+                checked={value}
+                disabled={isLoading}
+                onCheckedChange={onChange}
+              />
             )}
-          />
+          </FormField>
 
           <ButtonV1
             loading={{
