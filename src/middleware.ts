@@ -5,14 +5,16 @@ import {
   getSubdomain,
   getRedirectUrl,
   getNewSubdomain,
+  getRootPathname,
   ORIGIN_SUBDOMAIN,
+  checkPathnameStartWith,
   checkRedirectSubdomain,
   ORIGIN_PATHNAME_MAPPING,
 } from "./helpers/middleware";
 
 import type { NextRequest } from "next/server";
 
-const PRIVATE_ROUTERS_FOR_ADMIN = ["/admin"];
+const PRIVATE_ROUTERS_FOR_ADMIN = ["/admin"] as const;
 
 export async function middleware(req: NextRequest) {
   const { nextUrl, headers } = req;
@@ -21,18 +23,17 @@ export async function middleware(req: NextRequest) {
   const host = headers.get("host") || null;
   const subdomain = getSubdomain(host);
   const session = getSessionCookie(req);
+  const rootPathname = getRootPathname(subdomain, pathname);
+  const isMatchPrivateRouter = PRIVATE_ROUTERS_FOR_ADMIN.some(
+    (privatePathname) => checkPathnameStartWith(rootPathname, privatePathname)
+  );
 
-  // TODO: Implement role-based access control
-  if (
-    PRIVATE_ROUTERS_FOR_ADMIN.some(
-      (privatePathname) =>
-        privatePathname === pathname ||
-        privatePathname.startsWith(`${pathname}/`)
-    ) &&
-    subdomain === ORIGIN_SUBDOMAIN &&
-    !session
-  ) {
-    const url = new URL("/admin/login", req.url);
+  // TODO: Implement role-based access control with refactor code
+  if (isMatchPrivateRouter && !session && rootPathname !== "/admin/login") {
+    const url = new URL(
+      subdomain === "admin" ? "/login" : "/admin/login",
+      req.url
+    );
     return NextResponse.redirect(url);
   }
 

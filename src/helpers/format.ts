@@ -37,3 +37,7 @@ export function formatErrorMessage(error: unknown): {
     description: String(error),
   };
 }
+
+export function removeTrailingSlash(path: string): string {
+  return path.endsWith("/") && path.length > 1 ? path.slice(0, -1) : path;
+}
