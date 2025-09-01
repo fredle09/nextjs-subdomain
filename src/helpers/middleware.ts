@@ -1,3 +1,5 @@
+import { removeTrailingSlash } from "./format";
+
 export const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
 export const SET_COMPOUND_TLD = new Set(
   process.env.NEXT_PUBLIC_LIST_COMPOUND_TLD?.split(",") || ["com.vn"]
@@ -71,11 +73,23 @@ export function getRedirectUrl({
 const LIST_PATHNAME = [...new Set(Object.values(ORIGIN_PATHNAME_MAPPING))];
 
 export function checkRedirectSubdomain(pathname: string) {
-  return LIST_PATHNAME.find(
-    (path) => pathname === `/${path}` || pathname.startsWith(`/${path}/`)
+  return LIST_PATHNAME.find((path) =>
+    checkPathnameStartWith(pathname, `/${path}`)
   );
+}
+
+export function checkPathnameStartWith(pathname: string, path: string) {
+  return pathname === path || pathname.startsWith(`${path}/`);
 }
 
 export function getNewSubdomain(subdomain: string, redirectSubdomain: string) {
   return !subdomain ? redirectSubdomain : `${subdomain}-${redirectSubdomain}`;
+}
+
+export function getRootPathname(subdomain: string, pathname: string) {
+  const newSubdomain = ORIGIN_PATHNAME_MAPPING[subdomain];
+  const finalSubdomain = newSubdomain ?? subdomain;
+  return removeTrailingSlash(
+    `${finalSubdomain ? `/${finalSubdomain}` : ""}${pathname}`
+  );
 }
